@@ -4,7 +4,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace IdentityServer
 {
@@ -13,7 +12,7 @@ namespace IdentityServer
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-                   new Client
+                   new Client // API
                    {
                         ClientId = "movieClient",
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
@@ -23,11 +22,11 @@ namespace IdentityServer
                         },
                         AllowedScopes = { "movieAPI" }
                    },
-                   new Client
+                   new Client // MVC App
                    {
                        ClientId = "movies_mvc_client",
-                       ClientName = "Movies MVC Web App",
-                       AllowedGrantTypes = GrantTypes.Hybrid,
+                       ClientName = "Movies MVC Web App", // Description
+                       AllowedGrantTypes = GrantTypes.Code, // Which flow for the client application (STUDY THIS) http://docs.identityserver.io/en/aspnetcore2/topics/grant_types.html
                        RequirePkce = false,
                        AllowRememberConsent = false,
                        RedirectUris = new List<string>()
@@ -47,7 +46,7 @@ namespace IdentityServer
                            IdentityServerConstants.StandardScopes.OpenId,
                            IdentityServerConstants.StandardScopes.Profile,
                            IdentityServerConstants.StandardScopes.Address,
-                           IdentityServerConstants.StandardScopes.Email,                           
+                           IdentityServerConstants.StandardScopes.Email,
                            "movieAPI",
                            "roles"
                        }
