@@ -36,14 +36,14 @@ namespace Movies.Client
             services.AddScoped<IMovieApiService, MovieApiService>();
 
 
-            // http operations
+            #region Http Services
 
             // 1 create an HttpClient used for accessing the Movies.API
             services.AddTransient<AuthenticationDelegatingHandler>();
            
             services.AddHttpClient("MovieAPIClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5010/"); // API GATEWAY URL
+                client.BaseAddress = new Uri("https://localhost:5001/"); // API GATEWAY URL
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
@@ -58,17 +58,7 @@ namespace Movies.Client
             });
 
             services.AddHttpContextAccessor();
-
-            //services.AddSingleton(new ClientCredentialsTokenRequest
-            //{                                                
-            //    Address = "https://localhost:5005/connect/token",
-            //    ClientId = "movieClient",
-            //    ClientSecret = "secret",
-            //    Scope = "movieAPI"
-            //});
-
-            // http operations
-
+            #endregion
 
             services.AddAuthentication(options =>
                 {
@@ -84,8 +74,9 @@ namespace Movies.Client
                     options.ClientSecret = "secret";
                     options.ResponseType = "code id_token";
 
-                    //options.Scope.Add("openid");
-                    //options.Scope.Add("profile");
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("movieAPI");
                     options.Scope.Add("address");
                     options.Scope.Add("email");
                     options.Scope.Add("roles");
@@ -96,7 +87,6 @@ namespace Movies.Client
                     options.ClaimActions.DeleteClaim("auth_time");
                     options.ClaimActions.MapUniqueJsonKey("role", "role");
 
-                    options.Scope.Add("movieAPI");
 
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;

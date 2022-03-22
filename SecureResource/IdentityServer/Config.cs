@@ -12,22 +12,28 @@ namespace IdentityServer
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-                   new Client // API
-                   {
-                        ClientId = "movieClient",
-                        AllowedGrantTypes = GrantTypes.ClientCredentials,
-                        ClientSecrets =
-                        {
-                            new Secret("secret".Sha256())
-                        },
-                        AllowedScopes = { "movieAPI" }
-                   },
+                   //new Client // API
+                   //{
+                   //     ClientId = "movieClient",
+                   //     AllowedGrantTypes = GrantTypes.ClientCredentials,
+                   //     ClientSecrets =
+                   //     {
+                   //         new Secret("secret".Sha256())
+                   //     },
+                   //     AllowedScopes = { "movieAPI" }
+                   //},
                    new Client // MVC App
                    {
                        ClientId = "movies_mvc_client",
                        ClientName = "Movies MVC Web App", // Description
-                       AllowedGrantTypes = GrantTypes.Code, // Which flow for the client application (STUDY THIS) http://docs.identityserver.io/en/aspnetcore2/topics/grant_types.html
-                       RequirePkce = false,
+                       AllowedGrantTypes = GrantTypes.Hybrid, // Which flow for the client application (STUDY THIS) http://docs.identityserver.io/en/aspnetcore2/topics/grant_types.html
+                       // Determines the response structure
+                       // Grant Type => Response Type
+                       // * Authorization Code Flow => "code"
+                       // * Implicit Flow => "id_token" or "id_token token"
+                       // * Hybrid Flow => "code id_token", "code token" or "code id_token token"
+
+                       RequirePkce = false, // Related to Hybrid flow, defaults to true
                        AllowRememberConsent = false,
                        RedirectUris = new List<string>()
                        {
@@ -84,12 +90,12 @@ namespace IdentityServer
                 new TestUser
                 {
                     SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
-                    Username = "mehmet",
-                    Password = "swn",
+                    Username = "aoshua",
+                    Password = "123qwe",
                     Claims = new List<Claim>
                     {
-                        new Claim(JwtClaimTypes.GivenName, "mehmet"),
-                        new Claim(JwtClaimTypes.FamilyName, "ozkaya")
+                        new Claim(JwtClaimTypes.GivenName, "Josh"),
+                        new Claim(JwtClaimTypes.FamilyName, "Abbott")
                     }
                 }
             };
