@@ -38,26 +38,26 @@ namespace Movies.Client
 
             // http operations
 
-            // 1 create an HttpClient used for accessing the Movies.API
-            services.AddTransient<AuthenticationDelegatingHandler>();
+            //// 1 create an HttpClient used for accessing the Movies.API
+            //services.AddTransient<AuthenticationDelegatingHandler>();
            
-            services.AddHttpClient("MovieAPIClient", client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:5010/"); // API GATEWAY URL
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+            //services.AddHttpClient("MovieAPIClient", client =>
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:5010/"); // API GATEWAY URL
+            //    client.DefaultRequestHeaders.Clear();
+            //    client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            //}).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
 
-            // 2 create an HttpClient used for accessing the IDP
-            services.AddHttpClient("IDPClient", client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:5005/");
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            });
+            //// 2 create an HttpClient used for accessing the IDP
+            //services.AddHttpClient("IDPClient", client =>
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:5005/");
+            //    client.DefaultRequestHeaders.Clear();
+            //    client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            //});
 
-            services.AddHttpContextAccessor();
+            //services.AddHttpContextAccessor();
 
             //services.AddSingleton(new ClientCredentialsTokenRequest
             //{                                                
@@ -69,44 +69,45 @@ namespace Movies.Client
 
             // http operations
 
-
+            // Configuring OpenID Connect
             services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-                {                    
-                    options.Authority = "https://localhost:5005";
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {                    
+                options.Authority = "https://localhost:5005";
 
-                    options.ClientId = "movies_mvc_client";
-                    options.ClientSecret = "secret";
-                    options.ResponseType = "code id_token";
+                options.ClientId = "movies_mvc_client";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code"; //"code id_token";
 
-                    //options.Scope.Add("openid");
-                    //options.Scope.Add("profile");
-                    options.Scope.Add("address");
-                    options.Scope.Add("email");
-                    options.Scope.Add("roles");
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
 
-                    options.ClaimActions.DeleteClaim("sid");
-                    options.ClaimActions.DeleteClaim("idp");
-                    options.ClaimActions.DeleteClaim("s_hash");
-                    options.ClaimActions.DeleteClaim("auth_time");
-                    options.ClaimActions.MapUniqueJsonKey("role", "role");
+                //options.Scope.Add("address");
+                //options.Scope.Add("email");
+                //options.Scope.Add("roles");
 
-                    options.Scope.Add("movieAPI");
+                //options.ClaimActions.DeleteClaim("sid");
+                //options.ClaimActions.DeleteClaim("idp");
+                //options.ClaimActions.DeleteClaim("s_hash");
+                //options.ClaimActions.DeleteClaim("auth_time");
+                //options.ClaimActions.MapUniqueJsonKey("role", "role");
 
-                    options.SaveTokens = true;
-                    options.GetClaimsFromUserInfoEndpoint = true;
+                options.Scope.Add("movieAPI");
 
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {                       
-                        NameClaimType = JwtClaimTypes.GivenName,
-                        RoleClaimType = JwtClaimTypes.Role
-                    };
-                });
+                options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+
+                //options.TokenValidationParameters = new TokenValidationParameters
+                //{                       
+                //    NameClaimType = JwtClaimTypes.GivenName,
+                //    RoleClaimType = JwtClaimTypes.Role
+                //};
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

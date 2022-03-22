@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -15,35 +14,49 @@ namespace Movies.Client.ApiServices
 {
     public class MovieApiService : IMovieApiService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly IHttpClientFactory _httpClientFactory;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MovieApiService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
-        {
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-        }
+        //public MovieApiService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        //{
+        //    _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        //    _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        //}
 
         public async Task<IEnumerable<Movie>> GetMovies()
         {
+            var movieList = new List<Movie>()
+            {
+                new Movie()
+                {
+                    Id = 1,
+                    Genre = "Comics",
+                    Title = "asd",
+                    Rating = "9.2",
+                    ImageUrl = "image/src",
+                    ReleaseDate = DateTime.UtcNow,
+                    Owner =  "Josh"
+                }
+            };
+            return await Task.FromResult(movieList);
 
             ////////////////////////
             // WAY 1 :
 
-            var httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
+            //var httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
 
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                "/movies");
+            //var request = new HttpRequestMessage(
+            //    HttpMethod.Get,
+            //    "/movies");
 
-            var response = await httpClient.SendAsync(
-                request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            //var response = await httpClient.SendAsync(
+            //    request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
-            return movieList;
+            //var content = await response.Content.ReadAsStringAsync();
+            //var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
+            //return movieList;
 
             ////////////////////////// //////////////////////// ////////////////////////
             //// WAY 2 :
@@ -91,8 +104,6 @@ namespace Movies.Client.ApiServices
 
             //var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
             //return movieList;
-
-
         }
 
         public Task<Movie> GetMovie(string id)
@@ -116,39 +127,41 @@ namespace Movies.Client.ApiServices
         }
 
         public async Task<UserInfoViewModel> GetUserInfo()
-        {           
-            var idpClient = _httpClientFactory.CreateClient("IDPClient");
+        {
+            throw new NotImplementedException();
 
-            var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
+            //var idpClient = _httpClientFactory.CreateClient("IDPClient");
 
-            if (metaDataResponse.IsError)
-            {
-                throw new HttpRequestException("Something went wrong while requesting the access token");
-            }
+            //var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
 
-            var accessToken = await _httpContextAccessor
-                .HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+            //if (metaDataResponse.IsError)
+            //{
+            //    throw new HttpRequestException("Something went wrong while requesting the access token");
+            //}
+
+            //var accessToken = await _httpContextAccessor
+            //    .HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
             
-            var userInfoResponse = await idpClient.GetUserInfoAsync(
-               new UserInfoRequest
-               {
-                   Address = metaDataResponse.UserInfoEndpoint,
-                   Token = accessToken
-               });
+            //var userInfoResponse = await idpClient.GetUserInfoAsync(
+            //   new UserInfoRequest
+            //   {
+            //       Address = metaDataResponse.UserInfoEndpoint,
+            //       Token = accessToken
+            //   });
 
-            if (userInfoResponse.IsError)
-            {
-                throw new HttpRequestException("Something went wrong while getting user info");
-            }
+            //if (userInfoResponse.IsError)
+            //{
+            //    throw new HttpRequestException("Something went wrong while getting user info");
+            //}
             
-            var userInfoDictionary = new Dictionary<string, string>();
+            //var userInfoDictionary = new Dictionary<string, string>();
 
-            foreach (var claim in userInfoResponse.Claims)
-            {
-                userInfoDictionary.Add(claim.Type, claim.Value);
-            }
+            //foreach (var claim in userInfoResponse.Claims)
+            //{
+            //    userInfoDictionary.Add(claim.Type, claim.Value);
+            //}
 
-            return new UserInfoViewModel(userInfoDictionary);
+            //return new UserInfoViewModel(userInfoDictionary);
         }
     }
 }

@@ -38,9 +38,7 @@ namespace Movies.Client.Controllers
             Debug.WriteLine($"Identity token: {identityToken}");
 
             foreach (var claim in User.Claims)
-            {
                 Debug.WriteLine($"Claim type: {claim.Type} - Claim value: {claim.Value}");
-            }
         }
 
         [Authorize(Roles = "admin")]
